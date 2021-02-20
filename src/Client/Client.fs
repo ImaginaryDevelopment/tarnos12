@@ -28,7 +28,8 @@ type Model = { Screen:Screen; PlayerProperties:PlayerProperties option}
 // the state of the application changes *only* in reaction to these events
 type Msg =
     | BattleMsg of Js.Battle.Msg
-    | NewGame
+    | GoHome
+    | NewGame of int option
     // handles the load button and load game buttons
     | Load of int option
     | CancelLoad
@@ -44,9 +45,17 @@ let init () : Model * Cmd<Msg> =
 // The update function computes the next state of the application based on the current state and the incoming events/messages
 // It can also run side-effects (encoded as commands) like calling the server via Http.
 // these commands in turn, can dispatch messages to which the update function will react.
-let update (msg : Msg) (currentModel : Model) : Model * Cmd<Msg> =
-    match currentModel, msg with
-    | _ -> currentModel, Cmd.none
+let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
+    match model, msg with
+    | _, Msg.NewGame None -> {model with Screen = CreateScreen}, Cmd.none
+    | _ -> model, Cmd.none
+
+let mbutton dispatch msg (text:string) =
+    button[ Style[MarginBottom "5px"]
+            Class"btn btn-default border"
+            OnClick (fun _ -> msg |> dispatch)][
+    unbox text
+            ]
 
 let landingScreen (dispatch : Msg -> unit) =
     div [Id "startingScreen"; Style [Display DisplayOptions.Block]][
@@ -59,22 +68,38 @@ let landingScreen (dispatch : Msg -> unit) =
             row[
                 div[Class "col-xs-6 col-xs-3"][
                     div[Class "btn-group-vertical";Role "group";AriaLabel "New game, load game"][
-                        let mbutton msg (text:string) =
-                            button[Style[MarginBottom "5px"]; Class"btn btn-default border"; OnClick (fun _ -> msg |> dispatch)][
-                            unbox text
 
-                        ]
-                        mbutton Msg.NewGame "New Game"
-                        mbutton (Msg.Load None) "Load"
-                        mbutton (Msg.ClearSaves) "Reset all saves"
+                        mbutton dispatch (Msg.NewGame None) "New Game"
+                        mbutton dispatch (Msg.Load None) "Load"
+                        mbutton dispatch (Msg.ClearSaves) "Reset all saves"
                     ]
+                    button [
+                        Class "btn btn-default border startBackButtonMargin"
+                        OnClick (fun _ -> Msg.GoHome |> dispatch)][unbox "Go Back"]
                 ]
             ]
         ]
     ]
-let loadOrCreateScreen isCreate (dispatch : Msg -> unit) =
-    div [Class "raceCreation"; Id "raceCreation"][
 
+let loadOrCreateScreen isCreate (dispatch : Msg -> unit) =
+    printfn "Doing load or create screen!"
+    let inline mbutton x = mbutton dispatch x
+    let gameText = if isCreate then sprintf "New Game %i" else sprintf "Load Game %i"
+    let gameMsg = Some >> if isCreate then Msg.NewGame else Msg.Load
+    div [Class "raceCreation"; Id "raceCreation"][
+        row [
+            div [Class "col-xs-12 newGameButton"][
+                div [Class "btn-group-vertical"; Role "group"; AriaLabel "New game, load game"][
+                    // TODO: show any current save info next to buttons
+                    // mbutton (Msg.NewGame <| Some 0) "New Game 1"
+                    mbutton (gameMsg 0) (gameText 1)
+                    mbutton (gameMsg 1) (gameText 2)
+                    mbutton (gameMsg 2) (gameText 3)
+                    mbutton (gameMsg 3) (gameText 4)
+                ]
+
+            ]
+        ]
     ]
 
 
@@ -97,7 +122,11 @@ let view (model : Model) (dispatch : Msg -> unit) =
                         | Some pp ->
                             yield Js.Battle.view pp { Monster={Monster.Empty with Name="AlphaStalker"}} bMsg
                         | None ->
-                            yield landingScreen dispatch
+                            match model.Screen with
+                            | Home -> yield landingScreen dispatch
+                            | CreateScreen -> yield loadOrCreateScreen true dispatch
+                            | LoadScreen -> yield loadOrCreateScreen false dispatch
+
                     ]
 
                 ]
