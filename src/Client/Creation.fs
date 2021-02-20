@@ -18,7 +18,8 @@ type Model = { Age:Age }
         static member Empty = {Age=Age.MiddleAge}
 
 type ParentMsg =
-    | RaceSelection of CharacterRace
+    | RaceSelection of CharacterRaceType
+    | CancelRace
 
 type Msg =
     | AgeSelection of Age
@@ -38,47 +39,34 @@ let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
     | _ -> model, Cmd.none
 
 let view (model : Model) (dispatch : Msg -> unit) =
-    div[Id "raceDiv";Style[Display Block]] [
-        div[Class "raceText";Id "raceText";Style[Display None]] [
+    let raceClick x = OnClick (fun _ -> Msg.ParentMsg (ParentMsg.RaceSelection x) |> dispatch)
+    let createAgeBlip x =
+        let txt = string x
+        label[] [
+            input[  Id txt;Type "radio"
+                    Name "raceAge";Value txt
+                    Style[Visibility "visible"]
+                    Checked (model.Age = x)
+                    OnClick (fun _ -> dispatch <| Msg.AgeSelection x)
+                ]
+            span[Style[MarginLeft "20px"]] [ unbox txt]
+        ]
+    let plus color = pre[Style [Color color]] [ unbox "+" ]
+
+    div[Id "raceDiv";Style[Display DisplayOptions.Block]] [
+        div[Class "raceText";Id "raceText";Style[Display DisplayOptions.None]] [
             div[Class "row"] [
                 div[Class "col-xs-6 col-xs-offset-3"] [
-                    Unbox "Press"
+                    unbox "Press"
                     p[Class "glyphicon glyphicon-info-sign";Style[Color "black"]][]
-                    Unbox "for more info about a class."
+                    unbox "for more info about a class."
                 ]
             ]
         ]
-        div[Id "sliderDivID";Class "sliderDiv";Style[Display Block]] [
-
-            label[] [
-                input[Id "Adulthood";Type "radio";Name "raceAge";Value "Adulthood";Style[Visibility Visible];onclick "getAgeButton()";Checked false][]
-                span[Style[MarginLeft "20px"]] [
-                        Unbox "Adulthood"
-                ]
-            ]
-
-            label[] [
-                input[  Id "Middle Age";Type "radio";Name "raceAge";Value "Middle Age"
-                        Style[Visibility Visible];onclick "getAgeButton()"][]
-                span[Style[MarginLeft "20px"]] [
-                    Unbox "Middle Age"
-                ]
-            ]
-
-            label[] [
-                input[Id "Old";Type "radio";Name "raceAge";Value "Old";Style[Visibility Visible];onclick "getAgeButton()"][]
-                span[Style[MarginLeft "20px"]] [
-                    Unbox "Old"
-                ]
-            ]
-
-            label[] [
-                input[Id "Venerable";Type "radio";Name "raceAge";Value "Venerable";Style[Visibility Visible];onclick "getAgeButton()"][]
-                span[Style[MarginLeft "20px"]] [
-                        Unbox "Venerable"
-                ]
-            ]
-
+        div[Id "sliderDivID";Class "sliderDiv";Style[Display DisplayOptions.Block]] [
+            yield!
+                Age.All
+                |> List.map createAgeBlip
         ]
 
         div[Class "raceCreation";Id "raceCreation"] [
@@ -86,995 +74,665 @@ let view (model : Model) (dispatch : Msg -> unit) =
             div[Class "col-xs-12 col-xs-offset-1"] [
               div[Class "row"] [
                 div[Class "col-xs-6 col-xs-offset-2"] [
-                  img[Src "images/races/AdulthoodHuman.png"][]
-                            Unbox "Human"
+                  img[Src "images/races/AdulthoodHuman.png"]
+                  unbox "Human"
                   a[Class "tooltips"] [
                     p[Class "glyphicon glyphicon-info-sign";Style[Color "black"]][]
-                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign "left"]] [
+                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign TextAlignOptions.Left]] [
                       div[Class "row"] [
-                        div[Class "col-xs-10 col-xs-offset-1"] [
-                                            Unbox "Human"
+                            div[Class "col-xs-10 col-xs-offset-1"] [
+                                unbox "Human"
+                            ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-5";Style[PaddingLeft "46px"]] [
-                                            Unbox "Str:"
-                          font[color "red"] [
-                                                Unbox "+"
+                            unbox "Str:"
+                            plus "red"
+                            br[]
+                            unbox "End:"
+                            plus "red"
+                            br[]
+                            unbox "Agi:"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            br[]
+                            unbox "Dex:"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            br[]
+                            unbox "Wis:"
+                            plus "red"
+                            plus "red"
+                            br[]
+                            unbox "Int:"
+                            plus "red"
+                            plus "red"
+                            br[]
+                            unbox "Luc:"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            br[]
                         ]
-                          br[][]
-                                            Unbox "End:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Agi:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Dex:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Wis:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Int:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Luc:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                      ]
                         div[Class "col-xs-7"] [
-                                            Unbox "Bonuses:"
-                          br[][]
-                                            Unbox "All Stats: +20%"
-                          br[][]
-                                            Unbox "Exp Rate: +50%"
-                          br[][]
-                                            Unbox "Drop Rate: +50%"
-                          br[][]
-                                            Unbox "Gold Drop: +50%"
-                          br[][]
-                          br[][]
-                          img[Src "images/races/AdulthoodHuman.png"][]
+                            unbox "Bonuses:"
+                            br[]
+                            unbox "All Stats: +20%"
+                            br[]
+                            unbox "Exp Rate: +50%"
+                            br[]
+                            unbox "Drop Rate: +50%"
+                            br[]
+                            unbox "Gold Drop: +50%"
+                            br[]
+                            br[]
+                            img[Src "images/races/AdulthoodHuman.png"]
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                          br[][]
-                          font[color "#CC6633"] [
-                                                Unbox "&quot;Humans possess exceptional drive and a great capacity to endure and expand, and as such are currently the dominant race in the world.&quot;"
+                            br[]
+                            pre[Style [Color "#CC6633"]] [
+                                unbox "&quot;Humans possess exceptional drive and a great capacity to endure and expand, and as such are currently the dominant race in the world.&quot;"
+                            ]
                         ]
                       ]
                     ]
                   ]
                 ]
-              ]
                 div[Class "col-xs-2"] [
-                  button[type "button";Style[MarginBottom "5px"];Class "btn btn-default border";onclick "changeRace('Human', 'human');"] [
-                                Unbox "Choose"
+                    button[ Type "button";Style[MarginBottom "5px"];Class "btn btn-default border"
+                            // onclick "changeRace('Human', 'human');"
+                            raceClick Human
+                            ] [
+                        unbox "Choose"
+                    ]
                 ]
-              ]
                 div[Class "col-xs-6 col-xs-offset-2"] [
-                  img[Src "images/races/AdulthoodHalfElf.png"][]
-                            Unbox "Half Elf"
+                  img[Src "images/races/AdulthoodHalfElf.png"]
+                  unbox "Half Elf"
                   a[Class "tooltips"] [
                     p[Class "glyphicon glyphicon-info-sign";Style[Color "black"]][]
-                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign "left"]] [
+                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign TextAlignOptions.Left]] [
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                                            Unbox "Half Elf"
+                                            unbox "Half Elf"
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-5";Style[PaddingLeft "46px"]] [
-                                            Unbox "Str:"
-                          font[color "red"] [
-                                                Unbox "+"
+                            unbox "Str:"
+                            plus "red"
+                            plus "red"
+                            br[]
+                            unbox "End:"
+                            plus "red"
+                            plus "red"
+                            br[]
+                            unbox "Agi:"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            br[]
+                            unbox "Dex:"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            br[]
+                            unbox "Wis:"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            br[]
+                            unbox "Int:"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            plus "green"
+                            br[]
+                            unbox "Luc:"
+                            plus "red"
+                            br[]
                         ]
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "End:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Agi:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Dex:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Wis:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Int:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Luc:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                      ]
                         div[Class "col-xs-7"] [
-                                            Unbox "Bonuses:"
-                          br[][]
-                                            Unbox "All Stats: +10%"
-                          br[][]
-                                            Unbox "Gold Drop: +30%"
-                          br[][]
-                                            Unbox "Drop Rate: +30%"
-                          br[][]
-                                            Unbox "Exp Rate: +30%"
-                          br[][]
-                                            Unbox "Evasion: +5%"
-                          br[][]
-                          br[][]
-                          img[Src "images/races/AdulthoodHalfElf.png"][]
+                            unbox "Bonuses:"
+                            br[]
+                            unbox "All Stats: +10%"
+                            br[]
+                            unbox "Gold Drop: +30%"
+                            br[]
+                            unbox "Drop Rate: +30%"
+                            br[]
+                            unbox "Exp Rate: +30%"
+                            br[]
+                            unbox "Evasion: +5%"
+                            br[]
+                            br[]
+                            img[Src "images/races/AdulthoodHalfElf.png"]
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                          br[][]
-                          font[color "#CC6633"] [
-                                                Unbox "&quot;Elves have long drawn the covetous gazes of other races. Their generous lifespans, magical affinity, and inherent grace each contribute to the admiration or bitter envy of their neighbors.&quot;"
+                          br[]
+                          pre[Style [Color "#CC6633"]] [
+                                                unbox "&quot;Elves have long drawn the covetous gazes of other races. Their generous lifespans, magical affinity, and inherent grace each contribute to the admiration or bitter envy of their neighbors.&quot;"
                         ]
                       ]
                     ]
                   ]
                 ]
-              ]
-                div[Class "col-xs-2"] [
-                  button[type "button";Style[MarginBottom "5px"];Class "btn btn-default border";onclick "changeRace('Half Elf', 'halfElf');"] [
-                                Unbox "Choose"
                 ]
-              ]
+                div[Class "col-xs-2"] [
+                  button[   Type "button";Style[MarginBottom "5px"];Class "btn btn-default border"
+                            // onclick "changeRace('Half Elf', 'halfElf');"
+                            raceClick HalfElf
+                        ] [ unbox "Choose" ]
+                ]
                 div[Class "col-xs-6 col-xs-offset-2"] [
-                  img[Src "images/races/AdulthoodDwarf.png"][]
-                            Unbox "Dwarf"
+                  img[Src "images/races/AdulthoodDwarf.png"]
+                  unbox "Dwarf"
                   a[Class "tooltips"] [
                     p[Class "glyphicon glyphicon-info-sign";Style[Color "black"]][]
-                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign "left"]] [
+                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign TextAlignOptions.Left]] [
                       div[Class "row"] [
-                        div[Class "col-xs-10 col-xs-offset-1"] [
-                                            Unbox "Dwarf"
+                        div[Class "col-xs-10 col-xs-offset-1"] [ unbox "Dwarf" ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-5";Style[PaddingLeft "46px"]] [
-                                            Unbox "Str:"
-                          font[color "red"] [
-                                                Unbox "+"
+                          unbox "Str:"
+                          plus "red"
+                          plus "red"
+                          br[]
+                          unbox "End:"
+                          plus "blue"
+                          plus "blue"
+                          plus "blue"
+                          br[]
+                          unbox "Agi:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "Dex:"
+                          plus "blue"
+                          plus "blue"
+                          plus "blue"
+                          br[]
+                          unbox "Wis:"
+                          plus "red"
+                          plus "red"
+                          br[]
+                          unbox "Int:"
+                          plus "red"
+                          br[]
+                          unbox "Luc:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
                         ]
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "End:"
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Agi:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Dex:"
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Wis:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Int:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Luc:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                      ]
                         div[Class "col-xs-7"] [
-                                            Unbox "Bonuses:"
-                          br[][]
-                                            Unbox "Evasion: +5%"
-                          br[][]
-                                            Unbox "Defense: +20%"
-                          br[][]
-                                            Unbox "Gold Drop: +100%"
-                          br[][]
-                                            Unbox "Drop Rate: +50%"
-                          br[][]
-                          br[][]
-                          img[Src "images/races/AdulthoodDwarf.png"][]
+                          unbox "Bonuses:"
+                          br[]
+                          unbox "Evasion: +5%"
+                          br[]
+                          unbox "Defense: +20%"
+                          br[]
+                          unbox "Gold Drop: +100%"
+                          br[]
+                          unbox "Drop Rate: +50%"
+                          br[]
+                          br[]
+                          img[Src "images/races/AdulthoodDwarf.png"]
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                          br[][]
-                          font[color "#CC6633"] [
-                                                Unbox "&quot;Dwarves are a stoic but stern race, ensconced in cities carved from the hearts of mountains and fiercely determined to repel the depredations of savage races like orcs and goblins.&quot;"
+                          br[]
+                          pre[Style [Color "#CC6633"]] [
+                                                unbox "&quot;Dwarves are a stoic but stern race, ensconced in cities carved from the hearts of mountains and fiercely determined to repel the depredations of savage races like orcs and goblins.&quot;"
+                          ]
                         ]
                       ]
                     ]
                   ]
                 ]
-              ]
                 div[Class "col-xs-2"] [
-                  button[type "button";Style[MarginBottom "5px"];Class "btn btn-default border";onclick "changeRace('Dwarf', 'dwarf');"] [
-                                Unbox "Choose"
+                  button[   Type "button";Style[MarginBottom "5px"];Class "btn btn-default border"
+                            // onclick "changeRace('Dwarf', 'dwarf');"
+                            raceClick Dwarf
+                            ] [
+                                unbox "Choose"
+                  ]
                 ]
-              ]
                 div[Class "col-xs-6 col-xs-offset-2"] [
-                  img[Src "images/races/AdulthoodOrc.png"][]
-                            Unbox "Orc"
+                  img[Src "images/races/AdulthoodOrc.png"]
+                  unbox "Orc"
                   a[Class "tooltips"] [
                     p[Class "glyphicon glyphicon-info-sign";Style[Color "black"]][]
-                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign "left"]] [
+                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign TextAlignOptions.Left]] [
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                                            Unbox "Orc"
+                                            unbox "Orc"
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-5";Style[PaddingLeft "46px"]] [
-                                            Unbox "Str:"
-                          font[color "green"] [
-                                                Unbox "+"
+                          unbox "Str:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "End:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "Agi:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "Dex:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "Wis:"
+                          plus "red"
+                          br[]
+                          unbox "Int:"
+                          plus "red"
+                          br[]
+                          unbox "Luc:"
+                          plus "blue"
+                          plus "blue"
+                          plus "blue"
+                          br[]
                         ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "End:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Agi:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Dex:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Wis:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Int:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Luc:"
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                      ]
                         div[Class "col-xs-7"] [
-                                            Unbox "Bonuses:"
-                          br[][]
-                                            Unbox "Damage: +20%"
-                          br[][]
-                                            Unbox "Health: +10%"
-                          br[][]
-                          br[][]
-                          img[Src "images/races/AdulthoodOrc.png"][]
+                          unbox "Bonuses:"
+                          br[]
+                          unbox "Damage: +20%"
+                          br[]
+                          unbox "Health: +10%"
+                          br[]
+                          br[]
+                          img[Src "images/races/AdulthoodOrc.png"]
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                          br[][]
-                          font[color "#CC6633"] [
-                                                Unbox "&quot;Orcs are aggressive, callous, and domineering. Bullies by nature, they respect strength and power as the highest virtues. On an almost instinctive level, orcs believe they are entitled to anything they want unless someone stronger can stop them from seizing it.&quot;"
+                          br[]
+                          pre[Style [Color "#CC6633"]] [
+                                                unbox "&quot;Orcs are aggressive, callous, and domineering. Bullies by nature, they respect strength and power as the highest virtues. On an almost instinctive level, orcs believe they are entitled to anything they want unless someone stronger can stop them from seizing it.&quot;"
+                          ]
                         ]
                       ]
                     ]
                   ]
                 ]
-              ]
                 div[Class "col-xs-2"] [
-                  button[type "button";Style[MarginBottom "5px"];Class "btn btn-default border";onclick "changeRace('Orc', 'orc');"] [
-                                Unbox "Choose"
+                  button[   Type "button";Style[MarginBottom "5px"];Class "btn btn-default border"
+                            // onclick "changeRace('Orc', 'orc');"
+                            raceClick Orc
+                        ] [ unbox "Choose" ]
                 ]
-              ]
                 div[Class "col-xs-6 col-xs-offset-2"] [
-                  img[Src "images/races/AdulthoodElf.png"][]
-                            Unbox "Elf"
+                  img[Src "images/races/AdulthoodElf.png"]
+                  unbox "Elf"
                   a[Class "tooltips"] [
                     p[Class "glyphicon glyphicon-info-sign";Style[Color "black"]][]
-                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign "left"]] [
+                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign TextAlignOptions.Left]] [
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                                            Unbox "Elf"
+                                            unbox "Elf"
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-5";Style[PaddingLeft "46px"]] [
-                                            Unbox "Str:"
-                          font[color "blue"] [
-                                                Unbox "+"
+                          unbox "Str:"
+                          plus "blue"
+                          plus "blue"
+                          plus "blue"
+                          br[]
+                          unbox "End:"
+                          plus "blue"
+                          plus "blue"
+                          plus "blue"
+                          br[]
+                          unbox "Agi:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "Dex:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "Wis:"
+                          plus "red"
+                          br[]
+                          unbox "Int:"
+                          plus "blue"
+                          plus "blue"
+                          plus "blue"
+                          br[]
+                          unbox "Luc:"
+                          plus "blue"
+                          plus "blue"
+                          plus "blue"
+                          br[]
                         ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "End:"
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Agi:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Dex:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Wis:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Int:"
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Luc:"
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                      ]
                         div[Class "col-xs-7"] [
-                                            Unbox "Bonuses:"
-                          br[][]
-                                            Unbox "Never Miss"
-                          br[][]
-                                            Unbox "Critical Chance: +5%"
-                          br[][]
-                                            Unbox "Evasion: +5%"
-                          br[][]
-                                            Unbox "Health: -10%"
-                          br[][]
-                          br[][]
-                          img[Src "images/races/AdulthoodElf.png"][]
+                          unbox "Bonuses:"
+                          br[]
+                          unbox "Never Miss"
+                          br[]
+                          unbox "Critical Chance: +5%"
+                          br[]
+                          unbox "Evasion: +5%"
+                          br[]
+                          unbox "Health: -10%"
+                          br[]
+                          br[]
+                          img[Src "images/races/AdulthoodElf.png"]
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                          br[][]
-                          font[color "#CC6633"] [
-                                                Unbox "&quot;The long-lived elves are children of the natural world, similar in many superficial ways to fey creatures, though with key differences.&quot;"
+                          br[]
+                          pre[Style [Color "#CC6633"]] [
+                                                unbox "&quot;The long-lived elves are children of the natural world, similar in many superficial ways to fey creatures, though with key differences.&quot;"
+                          ]
                         ]
                       ]
                     ]
                   ]
                 ]
-              ]
                 div[Class "col-xs-2"] [
-                  button[type "button";Style[MarginBottom "5px"];Class "btn btn-default border";onclick "changeRace('Elf', 'elf');"] [
-                                Unbox "Choose"
+                  button[   Type "button";Style[MarginBottom "5px"];Class "btn btn-default border"
+                            // onclick "changeRace('Elf', 'elf');"
+                            raceClick Elf
+                            ] [ unbox "Choose" ]
                 ]
-              ]
                 div[Class "col-xs-6 col-xs-offset-2"] [
-                  img[Src "images/races/AdulthoodHalfing.png"][]
-                            Unbox "Halfing"
+                  img[Src "images/races/AdulthoodHalfing.png"]
+                  unbox "Halfing"
                   a[Class "tooltips"] [
                     p[Class "glyphicon glyphicon-info-sign";Style[Color "black"]][]
-                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign "left"]] [
+                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign TextAlignOptions.Left]] [
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                                            Unbox "Halfing"
+                                            unbox "Halfing"
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-5";Style[PaddingLeft "46px"]] [
-                                            Unbox "Str:"
-                          font[color "red"] [
-                                                Unbox "+"
+                          unbox "Str:"
+                          plus "red"
+                          br[]
+                          unbox "End:"
+                          plus "red"
+                          br[]
+                          unbox "Agi:"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          br[]
+                          unbox "Dex:"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          br[]
+                          unbox "Wis:"
+                          plus "red"
+                          plus "red"
+                          br[]
+                          unbox "Int:"
+                          plus "red"
+                          br[]
+                          unbox "Luc:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
                         ]
-                          br[][]
-                                            Unbox "End:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Agi:"
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Dex:"
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Wis:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Int:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Luc:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                      ]
                         div[Class "col-xs-7"] [
-                                            Unbox "Bonuses:"
-                          br[][]
-                                            Unbox "Evasion: +10%"
-                          br[][]
-                                            Unbox "Damage: -10%"
-                          br[][]
-                                            Unbox "Health: -20%"
-                          br[][]
-                                            Unbox "Critical Chance: +5%"
-                          br[][]
-                          br[][]
-                          img[Src "images/races/AdulthoodHalfing.png"][]
+                          unbox "Bonuses:"
+                          br[]
+                          unbox "Evasion: +10%"
+                          br[]
+                          unbox "Damage: -10%"
+                          br[]
+                          unbox "Health: -20%"
+                          br[]
+                          unbox "Critical Chance: +5%"
+                          br[]
+                          br[]
+                          img[Src "images/races/AdulthoodHalfing.png"]
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                          br[][]
-                          font[color "#CC6633"] [
-                                                Unbox "&quot;Optimistic and cheerful by nature, blessed with uncanny luck, and driven by a powerful wanderlust, halflings make up for their short stature with an abundance of bravado and curiosity.&quot;"
+                          br[]
+                          pre[Style [Color "#CC6633"]] [
+                                                unbox "&quot;Optimistic and cheerful by nature, blessed with uncanny luck, and driven by a powerful wanderlust, halflings make up for their short stature with an abundance of bravado and curiosity.&quot;"
+                          ]
                         ]
                       ]
                     ]
                   ]
                 ]
-              ]
                 div[Class "col-xs-2"] [
-                  button[type "button";Style[MarginBottom "5px"];Class "btn btn-default border";onclick "changeRace('Halfing', 'halfing');"] [
-                                Unbox "Choose"
+                  button[   Type "button";Style[MarginBottom "5px"];Class "btn btn-default border"
+                            // onclick "changeRace('Halfing', 'halfing');"
+                            raceClick Halfling
+                            ] [ unbox "Choose" ]
                 ]
-              ]
                 div[Class "col-xs-6 col-xs-offset-2"] [
-                  img[Src "images/races/AdulthoodSylph.png"][]
-                            Unbox "Sylph"
+                  img[Src "images/races/AdulthoodSylph.png"]
+                  unbox "Sylph"
                   a[Class "tooltips"] [
                     p[Class "glyphicon glyphicon-info-sign";Style[Color "black"]][]
-                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign "left"]] [
+                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign TextAlignOptions.Left]] [
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                                            Unbox "Sylph"
+                                            unbox "Sylph"
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-5";Style[PaddingLeft "46px"]] [
-                                            Unbox "Str:"
-                          font[color "red"] [
-                                                Unbox "+"
+                          unbox "Str:"
+                          plus "red"
+                          br[]
+                          unbox "End:"
+                          plus "red"
+                          br[]
+                          unbox "Agi:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "Dex:"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          plus "orange"
+                          br[]
+                          unbox "Wis:"
+                          plus "red"
+                          br[]
+                          unbox "Int:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "Luc:"
+                          plus "blue"
+                          plus "blue"
+                          plus "blue"
+                          br[]
                         ]
-                          br[][]
-                                            Unbox "End:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Agi:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Dex:"
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          font[color "orange"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Wis:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Int:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Luc:"
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                      ]
                         div[Class "col-xs-7"] [
-                                            Unbox "Bonuses:"
-                          br[][]
-                                            Unbox "Mana Regen: +100%"
-                          br[][]
-                                            Unbox "Max Mana: +50%"
-                          br[][]
-                                            Unbox "All Stats: +15%"
-                          br[][]
-                                            Unbox "Spell Power: +20%"
-                          br[][]
-                          br[][]
-                          img[Src "images/races/AdulthoodSylph.png"][]
+                          unbox "Bonuses:"
+                          br[]
+                          unbox "Mana Regen: +100%"
+                          br[]
+                          unbox "Max Mana: +50%"
+                          br[]
+                          unbox "All Stats: +15%"
+                          br[]
+                          unbox "Spell Power: +20%"
+                          br[]
+                          br[]
+                          img[Src "images/races/AdulthoodSylph.png"]
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                          br[][]
-                          font[color "#CC6633"] [
-                                                Unbox "&quot;Born from the descendants of humans and beings of elemental air such as djinn, sylphs are a shy and reclusive race consumed by intense curiosity.&quot;"
+                          br[]
+                          pre[Style[Color "#CC6633"]] [
+                                                unbox "&quot;Born from the descendants of humans and beings of elemental air such as djinn, sylphs are a shy and reclusive race consumed by intense curiosity.&quot;"
+                          ]
                         ]
                       ]
                     ]
                   ]
                 ]
-              ]
                 div[Class "col-xs-2"] [
-                  button[type "button";Style[MarginBottom "5px"];Class "btn btn-default border";onclick "changeRace('Sylph', 'sylph');"] [
-                                Unbox "Choose"
+                  button[   Type "button";Style[MarginBottom "5px"];Class "btn btn-default border"
+                            // onclick "changeRace('Sylph', 'sylph');"
+                            raceClick Sylph
+                            ] [ unbox "Choose" ]
                 ]
-              ]
                 div[Class "col-xs-6 col-xs-offset-2"] [
-                  img[Src "images/races/AdulthoodGiant.png"][]
-                            Unbox "Giant"
+                  img[Src "images/races/AdulthoodGiant.png"]
+                  unbox "Giant"
                   a[Class "tooltips"] [
                     p[Class "glyphicon glyphicon-info-sign";Style[Color "black"]][]
-                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign "left"]] [
+                    span[Style[Width "350px";Left "110px";Bottom "-30px";TextAlign TextAlignOptions.Left]] [
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                                            Unbox "Giant"
+                                            unbox "Giant"
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-5";Style[PaddingLeft "46px"]] [
-                                            Unbox "Str:"
-                          font[color "green"] [
-                                                Unbox "+"
+                          unbox "Str:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "End:"
+                          plus "blue"
+                          plus "blue"
+                          plus "blue"
+                          br[]
+                          unbox "Agi:"
+                          plus "red"
+                          plus "red"
+                          br[]
+                          unbox "Dex:"
+                          plus "red"
+                          plus "red"
+                          br[]
+                          unbox "Wis:"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          plus "green"
+                          br[]
+                          unbox "Int:"
+                          plus "red"
+                          br[]
+                          unbox "Luc:"
+                          plus "blue"
+                          plus "blue"
+                          plus "blue"
+                          br[]
                         ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "End:"
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Agi:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Dex:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Wis:"
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          font[color "green"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Int:"
-                          font[color "red"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                                            Unbox "Luc:"
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          font[color "blue"] [
-                                                Unbox "+"
-                        ]
-                          br[][]
-                      ]
                         div[Class "col-xs-7"] [
-                                            Unbox "Bonuses:"
-                          br[][]
-                                            Unbox "Damage: +40%"
-                          br[][]
-                                            Unbox "Health: +30%"
-                          br[][]
-                                            Unbox "Max Mana: -50%"
-                          br[][]
-                                            Unbox "Accuracy: -25%"
-                          br[][]
-                          br[][]
-                          img[Src "images/races/AdulthoodGiant.png"][]
+                          unbox "Bonuses:"
+                          br[]
+                          unbox "Damage: +40%"
+                          br[]
+                          unbox "Health: +30%"
+                          br[]
+                          unbox "Max Mana: -50%"
+                          br[]
+                          unbox "Accuracy: -25%"
+                          br[]
+                          br[]
+                          img[Src "images/races/AdulthoodGiant.png"]
+                        ]
                       ]
-                    ]
                       div[Class "row"] [
                         div[Class "col-xs-10 col-xs-offset-1"] [
-                          br[][]
-                          font[color "#CC6633"] [
-                                                Unbox "&quot;Their great size and strength lends them arguable advantages on the battlefield where they tower over their enemies. Dimwitted and slow moving, giants have use for neither speed nor intelligence, using brawn over brain to overcome obstacles.&quot;"
+                          br[]
+                          pre[Style [Color "#CC6633"]] [
+                                                unbox "&quot;Their great size and strength lends them arguable advantages on the battlefield where they tower over their enemies. Dimwitted and slow moving, giants have use for neither speed nor intelligence, using brawn over brain to overcome obstacles.&quot;"
+                          ]
                         ]
                       ]
                     ]
                   ]
                 ]
-              ]
                 div[Class "col-xs-2"] [
-                  button[type "button";Style[MarginBottom "5px"];Class "btn btn-default border";onclick "changeRace('Giant', 'giant');"] [
-                                Unbox "Choose"
+                  button[   Type "button";Style[MarginBottom "5px"];Class "btn btn-default border"
+                            // onclick "changeRace('Giant', 'giant');"
+                            raceClick Giant
+                            ] [ unbox "Choose" ]
                 ]
-              ]
                 div[Class "row"] [
                   div[Class "col-xs-2 col-xs-offset-5"] [
-                    button[type "button";Class "btn btn-default border startBackButtonMargin";onclick "newGameSlot()"] [
-                                    Unbox "Go Back"
-                  ]
+                    button[ Type "button";Class "btn btn-default border startBackButtonMargin"
+                            // onclick "newGameSlot()"
+                            OnClick (fun _ -> Msg.ParentMsg (ParentMsg.CancelRace) |> dispatch)
+                          ] [ unbox "Go Back" ]
                 ]
               ]
             ]
           ]
         ]
       ]
-
     ]

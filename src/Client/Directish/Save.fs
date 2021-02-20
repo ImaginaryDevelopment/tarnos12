@@ -13,7 +13,7 @@ module Dynamic =
 
     let checkHeroRace (characterRaces: CharacterRace seq) playerHeroRace =
         characterRaces
-        |> Seq.tryFind(fun heroRace -> heroRace.Name = playerHeroRace)
+        |> Seq.tryFind(fun heroRace -> heroRace.Type = playerHeroRace)
         |> function
             |None -> div[][]
             |Some heroRace ->

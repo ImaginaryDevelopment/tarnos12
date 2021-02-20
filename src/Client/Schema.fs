@@ -7,8 +7,26 @@ type Monster = {Area:string;Id:string;Name:string;MaxHp:uint;Hp:uint}
 type PlayerMode = Attacks|Spells
 
 type Age = | Adulthood | MiddleAge | Old | Venerable
+    with
+        static member All = [
+            Adulthood
+            MiddleAge
+            Old
+            Venerable
+        ]
+
+type CharacterRaceType=
+    |Human
+    |HalfElf
+    |Dwarf
+    |Orc
+    |Elf
+    |Halfling
+    |Sylph
+    |Giant
+
 type Stat = uint
-type CharacterRace = {  Name:string;Image:string;Age:Age;
+type CharacterRace = {  Type:CharacterRaceType;Image:string;Age:Age;
                         Strength:Stat;Endurance:Stat;Agility:Stat
                         Dexterity:Stat;Wisdom:Stat;Intelligence:Stat
                         Luck:Stat
