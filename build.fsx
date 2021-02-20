@@ -85,7 +85,6 @@ Target.create "Run" (fun _ ->
     }
 
     let vsCodeSession = Environment.hasEnvironVar "vsCodeSession"
-    let safeClientOnly = Environment.hasEnvironVar "safeClientOnly"
 
     let tasks =
         [ yield client
