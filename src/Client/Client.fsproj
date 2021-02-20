@@ -11,8 +11,9 @@
         <Compile Include="Version.fs" />
         <Compile Include="Schema.fs" />
         <Compile Include="FableHelpers.fs" />
-        <Compile Include="Save.fs" />
-        <Compile Include="Battle.fs" />
+        <Compile Include="Directish/Save.fs" />
+        <Compile Include="Directish/Battle.fs" />
+        <Compile Include="Creation.fs" />
         <Compile Include="Client.fs" />
     </ItemGroup>
     <Import Project="..\..\.paket\Paket.Restore.targets" />
