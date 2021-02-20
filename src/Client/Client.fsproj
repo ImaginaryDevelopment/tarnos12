@@ -10,6 +10,7 @@
         <None Include="style.scss" />
         <Compile Include="Version.fs" />
         <Compile Include="Schema.fs" />
+        <Compile Include="FableHelpers.fs" />
         <Compile Include="Battle.fs" />
         <Compile Include="Client.fs" />
     </ItemGroup>

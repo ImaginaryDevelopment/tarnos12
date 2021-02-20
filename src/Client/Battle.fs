@@ -20,6 +20,13 @@ let init () : Model * Cmd<Msg> =
 let update (msg : Msg) (currentModel : Model) : Model * Cmd<Msg> =
     currentModel, Cmd.none
 
+let playerSpellDiv weaponOpt =
+    let empty = div [Class "c3"] [unbox <| "Unlock some skills first! Using a weapon, will level up your proficiency, and unlock skills with it." ]
+    match weaponOpt with
+    | None -> empty
+    | Some weapon ->
+        empty
+
 let startBattle playerProperties model =
     // let monsterStats = monsterList.[monster]
     let image = playerProperties.RaceAge + playerProperties.RaceImage
