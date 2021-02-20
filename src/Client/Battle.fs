@@ -27,20 +27,24 @@ let playerSpellDiv weaponOpt =
     | Some weapon ->
         empty
 
-let startBattle playerProperties model =
+let startBattle (playerProperties:PlayerProperties) model =
     // let monsterStats = monsterList.[monster]
-    let image = playerProperties.RaceAge + playerProperties.RaceImage
+    let image = string playerProperties.CharacterRace.Age + playerProperties.CharacterRace.Image
+    let pb = div [
+        Style [Width "100%"]; AriaValuemax 100.; AriaValuemin 0.; AriaValuenow 60.
+        Role "progress-bar"; Id ("monster.name+1")
+    ]
+    let hp= span [Style [FontSize "13px"]][unbox <| sprintf "%A HP" model.Monster.Hp]
+    let monsterImage =
+        img [   Src <| sprintf "images/monsters/%s.png" model.Monster.Name;
+                Style [Position PositionOptions.Absolute;  Left "45%"; Top "50%"]]
     [
         div [Class "row"][ // progress bar, player image, monster image, animations
             div[Id "monsterImage"; Class "col-xs-12 c3"][
                 div[Class "progress"; Style [Width "50%";MarginLeft "25%"]][
-                    div[    Style [Width "100%"]; AriaValuemax 100.; AriaValuemin 0.; AriaValuenow 60.
-                            Role "progress-bar"; Id ("monster.name+1")][
-                        span [Style [FontSize "13px"]][unbox <| sprintf "%A HP" model.Monster.Hp]
-                    ]
+                    pb [ hp ]
                 ]
-                img [   Src <| sprintf "images/monsters/%s.png" model.Monster.Name;
-                        Style [Position PositionOptions.Absolute;  Left "45%"; Top "50%"]]
+                monsterImage
             ]
             div[][]
         ]

@@ -17,12 +17,15 @@ type Screen =
     | LoadScreen
     | CreateScreen
     | ConfirmWipe
+    | RaceSelection
 
 // The model holds data that you want to keep track of while the application is running
 // in this case, we are keeping track of a counter
 // we mark it as optional, because initially it will not be available from the client
 // the initial value will be requested from server
-type Model = { Screen:Screen; PlayerProperties:PlayerProperties option}
+type Model = { Screen:Screen; Slot:int option; PlayerProperties:PlayerProperties option}
+    with
+        static member Empty = {Screen = Home; Slot = None; PlayerProperties = None}
 
 // The Msg type defines what events/actions can occur while the application is running
 // the state of the application changes *only* in reaction to these events
@@ -39,7 +42,7 @@ type Msg =
 
 // defines the initial state and initial command (= side-effect) of the application
 let init () : Model * Cmd<Msg> =
-    let initialModel = { Screen=Home; PlayerProperties = None }
+    let initialModel = Model.Empty
     initialModel, Cmd.none
 
 // The update function computes the next state of the application based on the current state and the incoming events/messages
@@ -48,6 +51,7 @@ let init () : Model * Cmd<Msg> =
 let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
     match model, msg with
     | _, Msg.NewGame None -> {model with Screen = CreateScreen}, Cmd.none
+    | _, Msg.NewGame (Some i) -> {model with Screen = RaceSelection;Slot=Some i}, Cmd.none
     | _ -> model, Cmd.none
 
 let mbutton dispatch msg (text:string) =
@@ -59,11 +63,6 @@ let mbutton dispatch msg (text:string) =
 
 let landingScreen (dispatch : Msg -> unit) =
     div [Id "startingScreen"; Style [Display DisplayOptions.Block]][
-        div [Class "gameLogo"; Id "gameLogo"][
-            row[
-                div[Class "col-xs-12"][]
-            ]
-        ]
         div [Class "buttonDiv"; Id "buttonDiv"][
             row[
                 div[Class "col-xs-6 col-xs-3"][
@@ -101,7 +100,12 @@ let loadOrCreateScreen isCreate (dispatch : Msg -> unit) =
             ]
         ]
     ]
-
+let navbar = Navbar.navbar [ Navbar.Color IsPrimary ]
+                [ Navbar.Item.div [ ]
+                    [ Heading.h2 [ ][
+                        div [Class "gameLogo"; Id "gameLogo";Style [MinHeight "250px";MinWidth "350px"]][]
+                        ] ]
+                ]
 
 let view (model : Model) (dispatch : Msg -> unit) =
     let bMsg: Js.Battle.Msg -> unit =
@@ -110,11 +114,8 @@ let view (model : Model) (dispatch : Msg -> unit) =
             |> Msg.BattleMsg
             |> dispatch
     div []
-        [   Navbar.navbar [ Navbar.Color IsPrimary ]
-                [ Navbar.Item.div [ ]
-                    [ Heading.h2 [ ]
-                        [ str "SAFE Template" ] ] ]
-
+        [
+            navbar
             Container.container []
                 [
                     row[

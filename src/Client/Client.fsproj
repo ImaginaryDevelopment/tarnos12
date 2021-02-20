@@ -11,6 +11,7 @@
         <Compile Include="Version.fs" />
         <Compile Include="Schema.fs" />
         <Compile Include="FableHelpers.fs" />
+        <Compile Include="Save.fs" />
         <Compile Include="Battle.fs" />
         <Compile Include="Client.fs" />
     </ItemGroup>
